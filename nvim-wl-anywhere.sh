@@ -14,7 +14,7 @@ TERM_OPTS="-o font.size=$FONT_SIZE --class $TERM_CLASS -e"
 TMPFILE_DIR="/tmp/nvim-wl-anywhere"
 
 check_deps() {
-  local deps=("nvim" "alacritty" "wofi" "wtype")
+  local deps=("nvim" "$TERM" "wofi" "wtype")
 
   if ! $KEYSTROKE_MODE || $COPY_SELECTED; then
     deps+=("wl-paste")
@@ -129,12 +129,13 @@ parse_args() {
       ;;
 
     --term-opts)
-      TERM_OPTS=""
-      shift
-      while [[ $# -gt 0 && $1 != --* ]]; do
-        TERM_OPTS="$TERM_OPTS $1"
-        shift
-      done
+      if [[ $# -ge 2 ]]; then
+        TERM_OPTS="$2"
+        shift 2
+      else
+        echo "Error: --term-opts requires a value."
+        exit 1
+      fi
       ;;
 
     --help)
